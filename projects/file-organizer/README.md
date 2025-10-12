@@ -20,12 +20,12 @@ File Organizer scans a directory (like your Downloads folder) and automatically 
 
 ## Usage
 
-1. Edit the config section at the top of `file-organizer.js` to set your source directory
+1. Edit the config section at the top of `index.js` to set your source directory
 2. Run the script:
 
 
 ```shellscript
-node file-organizer.js
+node index.js
 ```
 
 That's it! Your files will be organized instantly.

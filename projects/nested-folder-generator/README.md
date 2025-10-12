@@ -20,7 +20,7 @@ Nested Folder Generator creates hierarchical directory structures based on confi
 
 ```shellscript
 # Run with default settings (binary tree, depth 3)
-node create-folders.js
+node index.js
 ```
 
 ### Customizing the Configuration
@@ -28,7 +28,7 @@ node create-folders.js
 Edit the `config` object in the script to customize the folder generation:
 
 ```javascript
-// Example: Modify the config object in create-folders.js
+// Example: Modify the config object in index.js
 const config = {
   // Array of folder names to create at each level
   folderNames: ['0', '1'],  // Change this array to customize folder names

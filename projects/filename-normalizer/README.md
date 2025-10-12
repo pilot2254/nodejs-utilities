@@ -13,19 +13,19 @@ A powerful Node.js utility that brings order to chaotic file systems by normaliz
 
 ## Quick Start
 
-1. Edit the configuration in `normalize-filenames.js` to set your source directory and preferences
+1. Edit the configuration in `index.js` to set your source directory and preferences
 2. Run in dry-run mode first to preview changes:
 
 
 ```shellscript
-node normalize-filenames.js
+node index.js
 ```
 
 3. When satisfied with the proposed changes, set `dryRun: false` in the config and run again:
 
 
 ```shellscript
-node normalize-filenames.js
+node index.js
 ```
 
 ## Configuration
