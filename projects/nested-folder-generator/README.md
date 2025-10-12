@@ -2,32 +2,17 @@
 
 A customizable Node.js tool for generating nested folder structures with configurable patterns and depth.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-
 ## Overview
 
 Nested Folder Generator creates hierarchical directory structures based on configurable patterns. It can generate binary trees (0/1), decimal trees (0-9), or any custom folder naming pattern you specify. The tool uses recursion to efficiently create deeply nested structures with minimal code.
 
 ## Features
 
-- 🌲 Create deeply nested folder structures
-- ⚙️ Highly configurable (folder names, depth, base directory)
-- 📊 Performance statistics and folder count
-- 🔄 Binary, decimal, or custom folder patterns
-- 📝 Detailed logging options
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/pilot2254/nested-folder-generator.git
-
-# Navigate to the project directory
-cd nested-folder-generator
-
-# No dependencies to install - just pure Node.js!
-```
+- Create deeply nested folder structures
+- Highly configurable (folder names, depth, base directory)
+- Performance statistics and folder count
+- Binary, decimal, or custom folder patterns
+- Detailed logging options
 
 ## Usage
 
@@ -137,7 +122,6 @@ Creates a structure for organizing media files with categories and subcategories
 - **Educational Purposes**: Demonstrate recursion and tree structures
 - **Benchmarking**: Test file system performance with different folder structures
 
-
 ## Technical Details
 
 - Written in pure Node.js with no external dependencies
@@ -145,25 +129,9 @@ Creates a structure for organizing media files with categories and subcategories
 - Handles error cases gracefully
 - Provides performance metrics
 
-
 ## Performance Considerations
 
 - Be careful with large depth values as the number of folders grows exponentially
 - For binary trees (0/1), depth 10 would create over 2,000 folders
 - For decimal trees (0-9), depth 4 would create over 11,000 folders
 - File system limits may be reached with very deep structures
-
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request

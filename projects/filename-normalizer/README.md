@@ -2,7 +2,6 @@
 
 A powerful Node.js utility that brings order to chaotic file systems by normalizing filenames and directories to follow consistent naming conventions.
 
-
 ## Features
 
 - **Multiple naming styles** - Convert to kebab-case, snake_case, camelCase, PascalCase, or lowercase
@@ -11,31 +10,6 @@ A powerful Node.js utility that brings order to chaotic file systems by normaliz
 - **Dry run mode** - Preview changes before applying them
 - **Configurable options** - Customize the behavior to suit your needs
 - **Smart directory handling** - Processes directories in the correct order to avoid path issues
-
-
-## Table of Contents
-
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Configuration](#-configuration)
-- [Examples](#-examples)
-- [Use Cases](#-use-cases)
-- [Contributing](#-contributing)
-- [License](#-license)
-
-
-## Installation
-
-```shellscript
-# Clone the repository
-git clone https://github.com/pilot2254/filename-normalizer.git
-
-# Navigate to the project directory
-cd filename-normalizer
-
-# Make the script executable (Unix/Linux/macOS)
-chmod +x normalize-filenames.js
-```
 
 ## Quick Start
 
@@ -195,27 +169,3 @@ case 'custom':
   // Add any other transformations
   break;
 ```
-
-## Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-
-### Ideas for Contributions
-
-- Add command-line argument support
-- Implement conflict resolution strategies
-- Add pattern-based file exclusions
-- Create an undo functionality
-- Add support for custom regex patterns
-
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

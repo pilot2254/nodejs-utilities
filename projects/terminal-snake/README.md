@@ -10,24 +10,6 @@ A simple, fun Snake game that runs directly in your terminal, built with Node.js
 - Game over detection with restart option
 - Clean, ASCII-based graphics
 
-## Installation
-
-1. Clone the repository:
-```
-git clone https://github.com/pilot2254/terminal-snake.git
-cd terminal-snake
-```
-
-2. Install (no external dependencies required):
-```
-npm install
-```
-
-3. Start the game:
-```
-npm start
-```
-
 ## How to Play
 
 - Use the arrow keys to control the snake:
@@ -44,15 +26,3 @@ npm start
 - `O` - Snake's head
 - `o` - Snake's body
 - `*` - Food
-
-## Requirements
-
-- Node.js (v14.0.0 or higher recommended)
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a pull request.
