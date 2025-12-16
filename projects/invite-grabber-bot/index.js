@@ -12,7 +12,7 @@ const client = new Client({
 })
 
 const TOKEN = process.env.BOT_TOKEN
-const OWNER_ID = process.env.OWNER_ID
+// const OWNER_ID = process.env.OWNER_ID // not needed anymore
 
 client.once("clientReady", async () => {
   console.log(`logged in as ${client.user.tag}`)
