@@ -1,0 +1,27 @@
+{
+  "name": "viewfarm",
+  "version": "1.0.0",
+  "description": ".",
+  "keywords": [
+    "views"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pilot2254/nodejs-utilities/viewfarm"
+  },
+  "license": "MIT",
+  "author": "pilot2254",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "typescript": "^5.9.3"
+  }
+}
