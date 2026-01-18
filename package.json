@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/pilot2254/nodejs-utilities/issues"
   },
-  "homepage": "https://github.com/pilot2254/nodejs-utilities#readme"
+  "homepage": "https://github.com/pilot2254/nodejs-utilities#readme",
+  "dependencies": {
+    "typescript": "^5.9.3"
+  }
 }

@@ -14,10 +14,13 @@ function getRandomDelay(): number {
 
 async function farmView() {
   try {
+    await axios.get(TARGET_URL);
+    /*
     await axios.post(TARGET_URL, {
       //add your payload if needed
       //if it's a GET request, use axios.get instead
     });
+    */
     count++;
     console.log(`view ${count} sent`);
   } catch (error) {
