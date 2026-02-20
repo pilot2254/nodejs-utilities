@@ -6,30 +6,10 @@ const CHECK_INTERVAL = 60 * 500; // 30 sec check (if my math is correct :/)
 const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1474507779061317737/ICWzLxbYjKhgbapcHRc7aei6-jq0PhrjXxVcO-mt16mxFOhl2ZjcouZROoaFRuLUr1Je"; // pls dont spam my shit, thx
 const PING_USER_ID = "635009085368172545"; // "" disables ping
 
-let APP_ID = null;
-let ITEM_NAME = null;
-
+let itemNameId = null;
 let lastSell = null;
 let lastBuy = null;
 let firstRun = true;
-
-// extract appid + item from link
-function parseMarketUrl() {
-  const match = MARKET_URL.match(/listings\/(\d+)\/(.+)$/);
-  if (!match) throw new Error("bad steam market url");
-
-  APP_ID = match[1];
-  ITEM_NAME = decodeURIComponent(match[2]);
-}
-
-function priceUrl() {
-  return `https://steamcommunity.com/market/priceoverview/?appid=${APP_ID}&currency=3&market_hash_name=${encodeURIComponent(ITEM_NAME)}`;
-}
-
-function parsePrice(str) {
-  if (!str) return null;
-  return parseFloat(str.replace(/[^\d,.-]/g, "").replace(",", "."));
-}
 
 function ping() {
   return PING_USER_ID ? `<@${PING_USER_ID}> ` : "";
@@ -43,27 +23,49 @@ async function send(msg) {
   });
 }
 
+function parsePrice(str) {
+  if (!str) return null;
+  return parseFloat(str.replace(",", "."));
+}
+
+// STEP 1: get item_nameid from html
+async function fetchItemNameId() {
+  const res = await fetch(MARKET_URL, {
+    headers: { "User-Agent": "Mozilla/5.0" }
+  });
+  const html = await res.text();
+
+  const match = html.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/);
+  if (!match) throw new Error("could not find item_nameid");
+
+  itemNameId = match[1];
+}
+
+// STEP 2: poll histogram endpoint
+function histogramUrl() {
+  return `https://steamcommunity.com/market/itemordershistogram?country=SK&language=en&currency=3&item_nameid=${itemNameId}&two_factor=0`;
+}
+
 async function check() {
   try {
-    const res = await fetch(priceUrl(), {
+    const res = await fetch(histogramUrl(), {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
     const data = await res.json();
+    if (!data.success) return;
+
+    const sell = parsePrice(data.lowest_sell_order);
+    const buy  = parsePrice(data.highest_buy_order);
 
     if (firstRun) {
       await send(
-        `${ping()}watching item\n${MARKET_URL}\n\`\`\`json\n${
-          JSON.stringify(data, null, 2).slice(0,1900)
-        }\n\`\`\``
+        `${ping()}watching item\n${MARKET_URL}\n` +
+        `sell: ${sell ?? "none"}\n` +
+        `buy: ${buy ?? "none"}`
       );
       firstRun = false;
     }
-
-    if (!data.success) return;
-
-    const sell = parsePrice(data.lowest_price);
-    const buy  = parsePrice(data.highest_buy_order);
 
     if (lastSell === null && sell !== null) lastSell = sell;
     if (lastBuy === null && buy !== null) lastBuy = buy;
@@ -76,7 +78,7 @@ async function check() {
 
     if (buy !== null && lastBuy !== null && buy > lastBuy) {
       await send(
-        `${ping()}buy order increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${MARKET_URL}`
+        `${ping()}buy increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${MARKET_URL}`
       );
     }
 
@@ -88,6 +90,16 @@ async function check() {
   }
 }
 
-parseMarketUrl();
-setInterval(check, CHECK_INTERVAL);
-check();
+// boot sequence
+(async () => {
+  try {
+    await fetchItemNameId();
+    console.log("item_nameid:", itemNameId);
+
+    setInterval(check, CHECK_INTERVAL);
+    check();
+
+  } catch (e) {
+    console.log("startup err:", e.message);
+  }
+})();
