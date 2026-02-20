@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
-const APP_ID = 753;
-const ITEM_NAME = "799070-Red Clouds";
+const APP_ID = 730;
+const ITEM_NAME = "Austin 2025 Train Souvenir Package";
 const CHECK_INTERVAL = 60 * 1000;
 
 const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1474507779061317737/ICWzLxbYjKhgbapcHRc7aei6-jq0PhrjXxVcO-mt16mxFOhl2ZjcouZROoaFRuLUr1Je";
