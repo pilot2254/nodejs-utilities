@@ -1,22 +1,29 @@
 const fetch = require("node-fetch");
 
-const APP_ID = 753;
-const ITEM_NAME = "799070-Red Clouds";
-const CHECK_INTERVAL = 60 * 1000;
+const MARKET_URL = "https://steamcommunity.com/market/listings/730/Austin%202025%20Train%20Souvenir%20Package";
+const CHECK_INTERVAL = 60 * 500; // 30 sec check (if my math is correct :/)
 
-const DISCORD_WEBHOOK = "PUT_WEBHOOK_URL_HERE";
-const PING_USER_ID = "PUT_USER_ID_HERE"; // "" disables ping
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1474507779061317737/ICWzLxbYjKhgbapcHRc7aei6-jq0PhrjXxVcO-mt16mxFOhl2ZjcouZROoaFRuLUr1Je"; // pls dont spam my shit, thx
+const PING_USER_ID = "635009085368172545"; // "" disables ping
+
+let APP_ID = null;
+let ITEM_NAME = null;
 
 let lastSell = null;
 let lastBuy = null;
 let firstRun = true;
 
-function url() {
-  return `https://steamcommunity.com/market/priceoverview/?appid=${APP_ID}&currency=3&market_hash_name=${encodeURIComponent(ITEM_NAME)}`;
+// extract appid + item from link
+function parseMarketUrl() {
+  const match = MARKET_URL.match(/listings\/(\d+)\/(.+)$/);
+  if (!match) throw new Error("bad steam market url");
+
+  APP_ID = match[1];
+  ITEM_NAME = decodeURIComponent(match[2]);
 }
 
-function marketLink() {
-  return `https://steamcommunity.com/market/listings/${APP_ID}/${encodeURIComponent(ITEM_NAME)}`;
+function priceUrl() {
+  return `https://steamcommunity.com/market/priceoverview/?appid=${APP_ID}&currency=3&market_hash_name=${encodeURIComponent(ITEM_NAME)}`;
 }
 
 function parsePrice(str) {
@@ -38,7 +45,7 @@ async function send(msg) {
 
 async function check() {
   try {
-    const res = await fetch(url(), {
+    const res = await fetch(priceUrl(), {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
@@ -46,7 +53,7 @@ async function check() {
 
     if (firstRun) {
       await send(
-        `${ping()}watching item\n${ITEM_NAME}\n${marketLink()}\n\`\`\`json\n${
+        `${ping()}watching item\n${MARKET_URL}\n\`\`\`json\n${
           JSON.stringify(data, null, 2).slice(0,1900)
         }\n\`\`\``
       );
@@ -58,21 +65,18 @@ async function check() {
     const sell = parsePrice(data.lowest_price);
     const buy  = parsePrice(data.highest_buy_order);
 
-    // init memory
     if (lastSell === null && sell !== null) lastSell = sell;
     if (lastBuy === null && buy !== null) lastBuy = buy;
 
-    // SELL dropped
     if (sell !== null && lastSell !== null && sell < lastSell) {
       await send(
-        `${ping()}sell dropped\nold: ${lastSell}\nnew: ${sell}\nbuy: ${buy ?? "none"}\n${marketLink()}`
+        `${ping()}sell dropped\nold: ${lastSell}\nnew: ${sell}\nbuy: ${buy ?? "none"}\n${MARKET_URL}`
       );
     }
 
-    // BUY increased (someone bidding higher)
     if (buy !== null && lastBuy !== null && buy > lastBuy) {
       await send(
-        `${ping()}buy order increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${marketLink()}`
+        `${ping()}buy order increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${MARKET_URL}`
       );
     }
 
@@ -84,5 +88,6 @@ async function check() {
   }
 }
 
+parseMarketUrl();
 setInterval(check, CHECK_INTERVAL);
 check();
