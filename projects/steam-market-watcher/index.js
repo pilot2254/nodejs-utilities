@@ -1,16 +1,17 @@
 const fetch = require("node-fetch");
 
-const APP_ID = 730;
-const ITEM_NAME = "Austin 2025 Train Souvenir Package";
+const APP_ID = 753;
+const ITEM_NAME = "799070-Red Clouds";
 const CHECK_INTERVAL = 60 * 1000;
 
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1474507779061317737/ICWzLxbYjKhgbapcHRc7aei6-jq0PhrjXxVcO-mt16mxFOhl2ZjcouZROoaFRuLUr1Je";
-const PING_USER_ID = "635009085368172545"; // leave "" to disable ping
+const DISCORD_WEBHOOK = "PUT_WEBHOOK_URL_HERE";
+const PING_USER_ID = "PUT_USER_ID_HERE"; // "" disables ping
 
-let lastPrice = null;
+let lastSell = null;
+let lastBuy = null;
 let firstRun = true;
 
-function priceUrl() {
+function url() {
   return `https://steamcommunity.com/market/priceoverview/?appid=${APP_ID}&currency=3&market_hash_name=${encodeURIComponent(ITEM_NAME)}`;
 }
 
@@ -19,10 +20,11 @@ function marketLink() {
 }
 
 function parsePrice(str) {
+  if (!str) return null;
   return parseFloat(str.replace(/[^\d,.-]/g, "").replace(",", "."));
 }
 
-function pingPrefix() {
+function ping() {
   return PING_USER_ID ? `<@${PING_USER_ID}> ` : "";
 }
 
@@ -36,38 +38,46 @@ async function send(msg) {
 
 async function check() {
   try {
-    const res = await fetch(priceUrl(), {
+    const res = await fetch(url(), {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
     const data = await res.json();
 
-    // first run → send json + link + ping
     if (firstRun) {
       await send(
-        `${pingPrefix()}first steam response\n${marketLink()}\n\`\`\`json\n${
+        `${ping()}watching item\n${ITEM_NAME}\n${marketLink()}\n\`\`\`json\n${
           JSON.stringify(data, null, 2).slice(0,1900)
         }\n\`\`\``
       );
       firstRun = false;
     }
 
-    if (!data.success || !data.lowest_price) return;
+    if (!data.success) return;
 
-    const price = parsePrice(data.lowest_price);
+    const sell = parsePrice(data.lowest_price);
+    const buy  = parsePrice(data.highest_buy_order);
 
-    if (lastPrice === null) {
-      lastPrice = price;
-      return;
-    }
+    // init memory
+    if (lastSell === null && sell !== null) lastSell = sell;
+    if (lastBuy === null && buy !== null) lastBuy = buy;
 
-    if (price < lastPrice) {
+    // SELL dropped
+    if (sell !== null && lastSell !== null && sell < lastSell) {
       await send(
-        `${pingPrefix()}price dropped\n${ITEM_NAME}\nold: ${lastPrice}\nnew: ${price}\n${marketLink()}`
+        `${ping()}sell dropped\nold: ${lastSell}\nnew: ${sell}\nbuy: ${buy ?? "none"}\n${marketLink()}`
       );
     }
 
-    lastPrice = price;
+    // BUY increased (someone bidding higher)
+    if (buy !== null && lastBuy !== null && buy > lastBuy) {
+      await send(
+        `${ping()}buy order increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${marketLink()}`
+      );
+    }
+
+    lastSell = sell ?? lastSell;
+    lastBuy  = buy  ?? lastBuy;
 
   } catch (e) {
     console.log("err:", e.message);
