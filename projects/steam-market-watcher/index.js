@@ -9,26 +9,28 @@ const PING_USER_ID = "635009085368172545"; // "" disables ping
 let itemNameId = null;
 let lastSell = null;
 let lastBuy = null;
-let firstRun = true;
 
 function ping() {
   return PING_USER_ID ? `<@${PING_USER_ID}> ` : "";
 }
 
 async function send(msg) {
-  await fetch(DISCORD_WEBHOOK, {
+  const r = await fetch(DISCORD_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: msg })
   });
+
+  // 👇 debug if webhook fails
+  if (!r.ok) console.log("webhook failed:", await r.text());
 }
 
-function parsePrice(str) {
-  if (!str) return null;
-  return parseFloat(str.replace(",", "."));
+// histogram returns cents → convert properly
+function parsePrice(v) {
+  if (!v) return null;
+  return Number(v) / 100;
 }
 
-// STEP 1: get item_nameid from html
 async function fetchItemNameId() {
   const res = await fetch(MARKET_URL, {
     headers: { "User-Agent": "Mozilla/5.0" }
@@ -36,12 +38,11 @@ async function fetchItemNameId() {
   const html = await res.text();
 
   const match = html.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/);
-  if (!match) throw new Error("could not find item_nameid");
+  if (!match) throw new Error("no item_nameid");
 
   itemNameId = match[1];
 }
 
-// STEP 2: poll histogram endpoint
 function histogramUrl() {
   return `https://steamcommunity.com/market/itemordershistogram?country=SK&language=en&currency=3&item_nameid=${itemNameId}&two_factor=0`;
 }
@@ -58,43 +59,35 @@ async function check() {
     const sell = parsePrice(data.lowest_sell_order);
     const buy  = parsePrice(data.highest_buy_order);
 
-    if (firstRun) {
-      await send(
-        `${ping()}watching item\n${MARKET_URL}\n` +
-        `sell: ${sell ?? "none"}\n` +
-        `buy: ${buy ?? "none"}`
-      );
-      firstRun = false;
-    }
+    // 👇 always log once so we know its alive
+    console.log("sell:", sell, "buy:", buy);
 
     if (lastSell === null && sell !== null) lastSell = sell;
     if (lastBuy === null && buy !== null) lastBuy = buy;
 
     if (sell !== null && lastSell !== null && sell < lastSell) {
-      await send(
-        `${ping()}sell dropped\nold: ${lastSell}\nnew: ${sell}\nbuy: ${buy ?? "none"}\n${MARKET_URL}`
-      );
+      await send(`${ping()}sell dropped\nold: ${lastSell}\nnew: ${sell}\n${MARKET_URL}`);
     }
 
     if (buy !== null && lastBuy !== null && buy > lastBuy) {
-      await send(
-        `${ping()}buy increased\nold: ${lastBuy}\nnew: ${buy}\nsell: ${sell ?? "none"}\n${MARKET_URL}`
-      );
+      await send(`${ping()}buy increased\nold: ${lastBuy}\nnew: ${buy}\n${MARKET_URL}`);
     }
 
     lastSell = sell ?? lastSell;
     lastBuy  = buy  ?? lastBuy;
 
   } catch (e) {
-    console.log("err:", e.message);
+    console.log("check err:", e.message);
   }
 }
 
-// boot sequence
 (async () => {
   try {
     await fetchItemNameId();
     console.log("item_nameid:", itemNameId);
+
+    // 👇 FORCE startup webhook so u know it works
+    await send(`${ping()}bot started\ntracking:\n${MARKET_URL}\nitem_nameid: ${itemNameId}`);
 
     setInterval(check, CHECK_INTERVAL);
     check();
