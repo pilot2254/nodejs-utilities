@@ -1,0 +1,18 @@
+{
+  "name": "steam-market-bot",
+  "version": "1.0.0",
+  "description": "blebleble",
+  "keywords": [
+    "bot"
+  ],
+  "license": "MIT",
+  "author": "pilot2254",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
