@@ -1,16 +1,22 @@
+import "dotenv/config";
 import fetch from "node-fetch";
 import * as fs from "fs";
 
 // ---- config ----
 
 interface Config {
-  discord_webhook: string;
   ping_user_id: string;
   check_interval_seconds: number;
   items: string[];
 }
 
 const config: Config = JSON.parse(fs.readFileSync("config.json", "utf-8"));
+
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK!;
+const STEAM_COOKIE = process.env.STEAM_COOKIE!;
+
+if (!DISCORD_WEBHOOK) throw new Error("DISCORD_WEBHOOK missing from .env");
+if (!STEAM_COOKIE) throw new Error("STEAM_COOKIE missing from .env");
 
 // ---- types ----
 
@@ -35,14 +41,15 @@ interface ItemState {
 
 // ---- helpers ----
 
-const headers = { "User-Agent": "Mozilla/5.0" };
+const baseHeaders = { "User-Agent": "Mozilla/5.0" };
+const authHeaders = { ...baseHeaders, Cookie: STEAM_COOKIE };
 
 function ping(): string {
   return config.ping_user_id ? `<@${config.ping_user_id}> ` : "";
 }
 
 async function send(msg: string): Promise<void> {
-  await fetch(config.discord_webhook, {
+  await fetch(DISCORD_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: msg }),
@@ -80,7 +87,7 @@ function histogramUrl(item: ItemState): string | null {
 
 async function fetchItemNameId(item: ItemState): Promise<void> {
   try {
-    const res = await fetch(item.url, { headers });
+    const res = await fetch(item.url, { headers: authHeaders });
     const html = await res.text();
     const match = html.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/);
     if (match) item.itemNameId = match[1];
@@ -91,7 +98,7 @@ async function fetchItemNameId(item: ItemState): Promise<void> {
 
 async function checkItem(item: ItemState): Promise<void> {
   try {
-    const res = await fetch(priceUrl(item), { headers });
+    const res = await fetch(priceUrl(item), { headers: authHeaders });
     const overview = (await res.json()) as PriceOverview;
     const sell = parsePriceString(overview.lowest_price);
 
@@ -99,7 +106,7 @@ async function checkItem(item: ItemState): Promise<void> {
     const hUrl = histogramUrl(item);
     if (hUrl) {
       try {
-        const hRes = await fetch(hUrl, { headers });
+        const hRes = await fetch(hUrl, { headers: authHeaders });
         const hist = (await hRes.json()) as Histogram;
         if (hist.success) buy = parsePriceInt(hist.highest_buy_order);
       } catch {
