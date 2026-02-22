@@ -113,7 +113,7 @@ async function checkItem(item: ItemState): Promise<void> {
       item.lastSell = sell;
       item.lastBuy = buy;
       await send(
-        `${ping()}tracking started — ${label}\n${item.url}\n` +
+        `${ping()}tracking started — ${label}\n<${item.url}>\n` +
           `sell: ${sell ?? "none"}\n` +
           `buy: ${buy ?? "not available"}`
       );
@@ -122,13 +122,13 @@ async function checkItem(item: ItemState): Promise<void> {
 
     if (sell !== null && item.lastSell !== null && sell < item.lastSell) {
       await send(
-        `${ping()}sell dropped — ${label}\nold: ${item.lastSell}\nnew: ${sell}\nbuy: ${buy ?? "?"}\n${item.url}`
+        `${ping()}sell dropped — ${label}\nold: ${item.lastSell}\nnew: ${sell}\nbuy: ${buy ?? "?"}\n<${item.url}>`
       );
     }
 
     if (buy !== null && item.lastBuy !== null && buy > item.lastBuy) {
       await send(
-        `${ping()}buy increased — ${label}\nold: ${item.lastBuy}\nnew: ${buy}\nsell: ${sell ?? "?"}\n${item.url}`
+        `${ping()}buy increased — ${label}\nold: ${item.lastBuy}\nnew: ${buy}\nsell: ${sell ?? "?"}\n<${item.url}>`
       );
     }
 
