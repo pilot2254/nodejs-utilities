@@ -1,0 +1,10 @@
+{
+  "discord_webhook": "https://discord.com/api/webhooks/1474507779061317737/ICWzLxbYjKhgbapcHRc7aei6-jq0PhrjXxVcO-mt16mxFOhl2ZjcouZROoaFRuLUr1Je",
+  "ping_user_id": "635009085368172545",
+  "check_interval_seconds": 60, // depends on how many items u have here
+  "items": [
+    "https://steamcommunity.com/market/listings/730/Austin%202025%20Train%20Souvenir%20Package",
+    "https://steamcommunity.com/market/listings/753/831660-Arishima%20Alice",
+    "https://steamcommunity.com/market/listings/753/831660-Seishin%20Himemiya%20%26%20Nanaturao"
+  ]
+}
