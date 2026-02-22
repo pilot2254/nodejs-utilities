@@ -2,22 +2,21 @@
   "name": "steam-market-bot",
   "version": "1.0.0",
   "description": "blebleble",
-  "keywords": [
-    "bot"
-  ],
+  "keywords": ["bot"],
   "license": "MIT",
   "author": "pilot2254",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx index.ts"
   },
   "dependencies": {
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "@types/node": "^25.3.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "@types/node": "^22.0.0",
+    "@types/node-fetch": "^2.6.11",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }
