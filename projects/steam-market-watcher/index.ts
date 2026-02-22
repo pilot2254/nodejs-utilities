@@ -87,12 +87,15 @@ function histogramUrl(item: ItemState): string | null {
 
 async function fetchItemNameId(item: ItemState): Promise<void> {
   try {
-    const res = await fetch(item.url, { headers: authHeaders });
+    const res = await fetch(item.url, { headers: authHeaders, follow: 10 });
     const html = await res.text();
+    console.log(`[${item.itemName}] status:`, res.status);
+    console.log(`[${item.itemName}] html snippet:`, html.slice(0, 500));
     const match = html.match(/Market_LoadOrderSpread\(\s*(\d+)\s*\)/);
     if (match) item.itemNameId = match[1];
-  } catch {
-    // non-fatal
+    else console.log(`[${item.itemName}] no nameid match found`);
+  } catch (e) {
+    if (e instanceof Error) console.error(`[${item.itemName}] fetchNameId failed:`, e.message);
   }
 }
 
