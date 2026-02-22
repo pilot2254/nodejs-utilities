@@ -2,9 +2,7 @@
   "name": "steam-market-bot",
   "version": "1.0.0",
   "description": "blebleble",
-  "keywords": [
-    "bot"
-  ],
+  "keywords": ["bot"],
   "license": "MIT",
   "author": "pilot2254",
   "type": "commonjs",
@@ -13,11 +11,9 @@
     "start": "tsx index.ts"
   },
   "dependencies": {
-    "dotenv": "^17.3.1",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "@types/dotenv": "^6.1.1",
     "@types/node": "^22.0.0",
     "@types/node-fetch": "^2.6.11",
     "tsx": "^4.0.0",
